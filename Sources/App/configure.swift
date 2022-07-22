@@ -15,8 +15,16 @@ public func configure(_ app: Application) throws {
         database: Environment.get("DATABASE_NAME") ?? "vapor_database"
     ), as: .psql)
 
-    app.migrations.add(CreateTodo())
 
+    // 1. Adds CreateTweet to the list of migrations to run
+    app.migrations.add(CreateTweet())
+      
+    // 2. Sets the log level for the app to debug. This provides more information and lets you see your migrations
+    app.logger.logLevel = .debug
+
+    // 3. Automatically runs migrations and waits for the result. Fluent lets you choose when to run your migrations. This is helpful when you need to schedule them. You can use wait() here since you’re not running on an EventLoop.
+    try app.autoMigrate().wait()
+    
     // register routes
     try routes(app)
 }
